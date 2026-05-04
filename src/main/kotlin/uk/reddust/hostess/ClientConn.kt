@@ -1,26 +1,13 @@
 package uk.reddust.hostess
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.network.sockets.Socket
-import io.ktor.network.sockets.openReadChannel
-import io.ktor.network.sockets.openWriteChannel
-import io.ktor.utils.io.core.remaining
-import io.ktor.utils.io.readBuffer
-import io.ktor.utils.io.readPacket
-import io.ktor.utils.io.readRemaining
-import io.ktor.utils.io.writeBuffer
-import io.ktor.utils.io.writePacket
+import io.ktor.network.sockets.*
+import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.isActive
 import kotlinx.io.Buffer
 import kotlinx.io.EOFException
-import kotlinx.io.Sink
-import uk.reddust.hostess.packets.DebugLogPacket
-import uk.reddust.hostess.packets.FileExistsRequestPacket
-import uk.reddust.hostess.packets.FileExistsResponsePacket
-import uk.reddust.hostess.packets.FileRequestBlockingPacket
-import uk.reddust.hostess.packets.FileResponseFailurePacket
-import uk.reddust.hostess.packets.SetClientNamePacket
-import kotlin.math.log
+import uk.reddust.hostess.packets.*
 
 class ClientConn(val socket: Socket) {
     var name = "client"

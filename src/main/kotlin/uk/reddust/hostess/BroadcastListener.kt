@@ -3,13 +3,11 @@ package uk.reddust.hostess
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import io.ktor.util.network.address
+import io.ktor.util.network.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.io.Buffer
 import uk.reddust.hostess.packets.ClientAnnouncePacket
 import uk.reddust.hostess.packets.ServerAcceptPacket
-import kotlin.math.log
-import kotlin.time.Instant
 
 class BroadcastListener(val socket: BoundDatagramSocket) {
     companion object {
@@ -18,7 +16,7 @@ class BroadcastListener(val socket: BoundDatagramSocket) {
 
         suspend fun create(addr: String): BroadcastListener {
             val socket = aSocket(selectorManager).udp().bind(addr, 3309) {
-                this.broadcast = true;
+                this.broadcast = true
             }
             return BroadcastListener(socket)
         }

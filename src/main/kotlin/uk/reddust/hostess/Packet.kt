@@ -6,7 +6,7 @@ import kotlinx.io.Source
 
 interface Packet {
     fun encode(buffer: Sink): PacketType
-    fun decode(header: PacketHeader, buffer: Source);
+    fun decode(header: PacketHeader, buffer: Source)
 
     companion object {
         @Suppress("UNCHECKED_CAST")
