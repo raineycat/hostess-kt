@@ -8,10 +8,16 @@ import kotlinx.coroutines.isActive
 import kotlinx.io.Buffer
 import kotlinx.io.EOFException
 import uk.reddust.hostess.packets.*
+import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.exists
+import kotlin.io.path.fileSize
+import kotlin.io.path.readBytes
 
 class ClientConn(val socket: Socket) {
     var name = "client"
     val logger = KotlinLogging.logger {  }
+    val writer = socket.openWriteChannel(true)
 
     suspend fun handle() {
         val channel = socket.openReadChannel()
@@ -42,9 +48,8 @@ class ClientConn(val socket: Socket) {
         val buffer = Buffer()
         Packet.write(packet, buffer)
 
-        val channel = socket.openWriteChannel(true)
         logger.debug { "[$name] sending ${buffer.size} bytes" }
-        channel.writePacket(buffer)
+        writer.writeBuffer(buffer.build())
     }
 
     private suspend fun process(packet: Packet) {
@@ -57,21 +62,48 @@ class ClientConn(val socket: Socket) {
             }
 
             is FileRequestBlockingPacket -> {
-                logger.info { "[$name] request file: ${packet.fileName} (${packet.clientHandle})" }
-                reply(FileResponseFailurePacket().apply {
-                    this.clientHandle = packet.clientHandle
-                    this.errorKind = ErrorKind.FileOpenFail
-                })
+                val path = Path(packet.fileName)
+                logger.info { "[$name] request file blocking: $path (${packet.clientHandle})" }
+
+                if(!path.exists()) {
+                    reply(FileResponseFailurePacket().apply {
+                        this.clientHandle = packet.clientHandle
+                        this.errorKind = ErrorKind.FileOpenFail
+                    })
+                    return
+                }
+
+                sendFile(packet.clientHandle, Path(packet.fileName))
             }
 
             is FileExistsRequestPacket -> {
-                logger.info { "[$name] check file exists: ${packet.fileName} (${packet.clientHandle})" }
+                val path = Path(packet.fileName)
+                logger.info { "[$name] check file exists: $path (${packet.clientHandle})" }
+
                 reply(FileExistsResponsePacket().apply {
                     this.clientHandle = packet.clientHandle
                     this.errorKind = ErrorKind.Success
-                    this.exists = false
+                    this.exists = path.exists()
                 })
             }
         }
+    }
+
+    private suspend fun sendFile(clientHandle: Int, path: Path) {
+        reply(FileResponseBeginPacket().apply {
+            this.clientHandle = clientHandle
+            this.fileSize = path.fileSize().toInt()
+        })
+
+        val data = path.readBytes()
+        reply(FileResponseDataPacket().apply {
+            this.clientHandle = clientHandle
+            this.fileOffset = 0
+            this.data = data.take(1024).toByteArray()
+        })
+
+        reply(FileResponseEndPacket().apply {
+            this.clientHandle = clientHandle
+        })
     }
 }

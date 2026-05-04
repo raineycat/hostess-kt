@@ -9,6 +9,16 @@ This server implements broadcast listening, so a patched game can automatically 
 This project is written in Kotlin and uses `ktor-sockets` for networking.
 Logback handles logging, so you can edit that config file if you want more or less verbosity.
 
+## Project state
+- The low level protocol stuff works
+- It can receive and print debug logs
+- Sending files is currently broken for unknown reasons
+- Not all packets are implemented
+
+### Goals
+- Configuration system
+- Some kind of control interface
+
 ## Protocol features
 - Asset file loading
   - The game will query the server when it needs to load asset files
@@ -21,5 +31,5 @@ Logback handles logging, so you can edit that config file if you want more or le
   - The server can send Lua code to the game to be executed
   - I haven't played around with this yet, I don't know how powerful it is
 - Cheat keys
-  - I don't know what these actually do
-  - The name sounds interesting though
+  - Sends keycodes to the game
+  - The game simulates them being pressed

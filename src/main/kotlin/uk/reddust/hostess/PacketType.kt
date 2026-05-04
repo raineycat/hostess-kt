@@ -6,10 +6,10 @@ import uk.reddust.hostess.packets.*
 enum class PacketType(val value: Byte, val clazz: KClass<out Packet>) {
     None(0, EmptyPacket::class),
     FileRequestBlocking(1, FileRequestBlockingPacket::class),
-    FileResponseData(2, EmptyPacket::class),
+    FileResponseData(2, FileResponseDataPacket::class),
     FileResponseFailure(3, FileResponseFailurePacket::class),
-    FileResponseBegin(4, EmptyPacket::class),
-    FileResponseEnd(5, EmptyPacket::class),
+    FileResponseBegin(4, FileResponseBeginPacket::class),
+    FileResponseEnd(5, FileResponseEndPacket::class),
     ClientAnnounce(6, ClientAnnouncePacket::class),
     ServerAccept(7, ServerAcceptPacket::class),
     CheatKey(8, EmptyPacket::class),
