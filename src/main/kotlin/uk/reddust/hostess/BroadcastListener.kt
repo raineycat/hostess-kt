@@ -28,7 +28,7 @@ class BroadcastListener(val socket: BoundDatagramSocket) {
         logger.debug { "datagram from ${datagram.address}: $packet" }
 
         if(packet is ClientAnnouncePacket) {
-            logger.debug { "client announce: ${packet.clientName}" }
+            logger.debug { "client announce: ${packet.text}" }
             val sink = Buffer()
             Packet.write(ServerAcceptPacket(), sink)
 

@@ -4,5 +4,4 @@ import uk.reddust.hostess.PacketType
 import uk.reddust.hostess.packets.abstract.SimpleStringPacket
 
 class ClientAnnouncePacket : SimpleStringPacket(PacketType.ClientAnnounce) {
-    var clientName = ""
 }
