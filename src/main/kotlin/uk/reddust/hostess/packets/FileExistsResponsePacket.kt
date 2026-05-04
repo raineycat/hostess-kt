@@ -1,0 +1,33 @@
+package uk.reddust.hostess.packets
+
+import kotlinx.io.Sink
+import kotlinx.io.Source
+import kotlinx.io.readString
+import kotlinx.io.writeString
+import uk.reddust.hostess.ErrorKind
+import uk.reddust.hostess.Packet
+import uk.reddust.hostess.PacketHeader
+import uk.reddust.hostess.PacketType
+import uk.reddust.hostess.read7BitInt
+import uk.reddust.hostess.readBool
+import uk.reddust.hostess.write7BitInt
+import uk.reddust.hostess.writeBool
+
+class FileExistsResponsePacket : Packet {
+    var clientHandle = 0
+    var errorKind = ErrorKind.EpicFail
+    var exists = false
+
+    override fun encode(buffer: Sink): PacketType {
+        buffer.write7BitInt(clientHandle)
+        buffer.write7BitInt(errorKind.ordinal)
+        buffer.writeBool(exists)
+        return PacketType.FileRequestBlocking
+    }
+
+    override fun decode(header: PacketHeader, buffer: Source) {
+        clientHandle = buffer.read7BitInt()
+        errorKind = ErrorKind.get(buffer.read7BitInt())
+        exists = buffer.readBool()
+    }
+}
