@@ -2,6 +2,7 @@ package uk.reddust.hostess
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.network.sockets.*
+import io.ktor.util.cio.readChannel
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.isActive
@@ -12,7 +13,6 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.fileSize
-import kotlin.io.path.readBytes
 
 class ClientConn(val socket: Socket) {
     var name = "client"
@@ -48,7 +48,7 @@ class ClientConn(val socket: Socket) {
         val buffer = Buffer()
         Packet.write(packet, buffer)
 
-        logger.debug { "[$name] sending ${buffer.size} bytes" }
+        logger.trace { "[$name] sending ${buffer.size} bytes" }
         writer.writeBuffer(buffer.build())
     }
 
@@ -95,12 +95,25 @@ class ClientConn(val socket: Socket) {
             this.fileSize = path.fileSize().toInt()
         })
 
-        val data = path.readBytes()
-        reply(FileResponseDataPacket().apply {
-            this.clientHandle = clientHandle
-            this.fileOffset = 0
-            this.data = data.take(1024).toByteArray()
-        })
+        val reader = path.readChannel()
+        val chunkSize = 1024L
+        var position = 0L
+        var read = chunkSize
+
+        while(read == chunkSize) {
+            val data = reader.readBuffer(chunkSize.toInt())
+            read = data.size
+
+            logger.trace { "[$name] read $read bytes from file $clientHandle" }
+            reply(FileResponseDataPacket().apply {
+                this.clientHandle = clientHandle
+                this.fileOffset = position.toInt()
+                this.data = data.readBytes()
+            })
+
+            position += read
+            logger.trace { "[$name] file $clientHandle position is now $position (+$read)" }
+        }
 
         reply(FileResponseEndPacket().apply {
             this.clientHandle = clientHandle

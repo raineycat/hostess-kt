@@ -13,7 +13,7 @@ class FileExistsResponsePacket : Packet {
         buffer.write7BitInt(clientHandle)
         buffer.write7BitInt(errorKind.ordinal)
         buffer.writeBool(exists)
-        return PacketType.FileRequestBlocking
+        return PacketType.FileExistsResponse
     }
 
     override fun decode(header: PacketHeader, buffer: Source) {

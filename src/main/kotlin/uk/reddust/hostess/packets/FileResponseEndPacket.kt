@@ -9,7 +9,7 @@ class FileResponseEndPacket : Packet {
 
     override fun encode(buffer: Sink): PacketType {
         buffer.write7BitInt(clientHandle)
-        return PacketType.FileResponseBegin
+        return PacketType.FileResponseEnd
     }
 
     override fun decode(header: PacketHeader, buffer: Source) {
