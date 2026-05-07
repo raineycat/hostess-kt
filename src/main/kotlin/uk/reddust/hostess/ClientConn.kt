@@ -13,6 +13,7 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.fileSize
+import kotlin.io.path.listDirectoryEntries
 
 class ClientConn(val socket: Socket) {
     var name = "client"
@@ -44,7 +45,10 @@ class ClientConn(val socket: Socket) {
         logger.debug { "[$name] DC" }
     }
 
-    private suspend fun reply(packet: Packet) {
+    private suspend fun <TPacket: Packet> reply(ctor: () -> TPacket, builder: TPacket.() -> Unit) {
+        val packet = ctor()
+        packet.builder()
+
         val buffer = Buffer()
         Packet.write(packet, buffer)
 
@@ -66,10 +70,10 @@ class ClientConn(val socket: Socket) {
                 logger.info { "[$name] request file blocking: $path (${packet.clientHandle})" }
 
                 if(!path.exists()) {
-                    reply(FileResponseFailurePacket().apply {
+                    reply(::FileResponseFailurePacket) {
                         this.clientHandle = packet.clientHandle
                         this.errorKind = ErrorKind.FileOpenFail
-                    })
+                    }
                     return
                 }
 
@@ -80,20 +84,36 @@ class ClientConn(val socket: Socket) {
                 val path = Path(packet.fileName)
                 logger.info { "[$name] check file exists: $path (${packet.clientHandle})" }
 
-                reply(FileExistsResponsePacket().apply {
+                reply(::FileExistsResponsePacket) {
                     this.clientHandle = packet.clientHandle
                     this.errorKind = ErrorKind.Success
                     this.exists = path.exists()
-                })
+                }
+            }
+
+            is DirectoryGetFilesPacket -> {
+                val path = Path(packet.path)
+                logger.info { "[$name] enumerate dir: $path (${packet.clientHandle})" }
+
+                val entries = path.listDirectoryEntries(packet.searchPattern)
+                reply(::DirectoryGetFilesResponsePacket) {
+                    this.clientHandle = packet.clientHandle
+                    this.errorKind = ErrorKind.Success
+                    this.files = entries.map { it.toString() }
+                }
+            }
+
+            else -> {
+                logger.warn { "[$name] Unhandled packet: $packet" }
             }
         }
     }
 
     private suspend fun sendFile(clientHandle: Int, path: Path) {
-        reply(FileResponseBeginPacket().apply {
+        reply(::FileResponseBeginPacket) {
             this.clientHandle = clientHandle
             this.fileSize = path.fileSize().toInt()
-        })
+        }
 
         val reader = path.readChannel()
         val chunkSize = 1024L
@@ -105,18 +125,18 @@ class ClientConn(val socket: Socket) {
             read = data.size
 
             logger.trace { "[$name] read $read bytes from file $clientHandle" }
-            reply(FileResponseDataPacket().apply {
+            reply(::FileResponseDataPacket) {
                 this.clientHandle = clientHandle
                 this.fileOffset = position.toInt()
                 this.data = data.readBytes()
-            })
+            }
 
             position += read
             logger.trace { "[$name] file $clientHandle position is now $position (+$read)" }
         }
 
-        reply(FileResponseEndPacket().apply {
+        reply(::FileResponseEndPacket) {
             this.clientHandle = clientHandle
-        })
+        }
     }
 }

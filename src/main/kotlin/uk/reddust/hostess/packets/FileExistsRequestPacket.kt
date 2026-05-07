@@ -21,7 +21,7 @@ class FileExistsRequestPacket : Packet {
         buffer.write7BitInt(clientHandle)
         buffer.writeBool(isDirectory)
         buffer.writeString(fileName)
-        return PacketType.FileRequestBlocking
+        return PacketType.FileExistsRequest
     }
 
     override fun decode(header: PacketHeader, buffer: Source) {

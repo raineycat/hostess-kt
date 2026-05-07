@@ -9,7 +9,6 @@ interface Packet {
     fun decode(header: PacketHeader, buffer: Source)
 
     companion object {
-        @Suppress("UNCHECKED_CAST")
         fun read(buffer: Source): Packet {
             val header = PacketHeader.decode(buffer)
             val inst = header.type.clazz.constructors.first().call()

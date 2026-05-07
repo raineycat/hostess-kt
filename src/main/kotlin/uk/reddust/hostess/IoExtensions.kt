@@ -2,20 +2,19 @@ package uk.reddust.hostess
 
 import kotlinx.io.Sink
 import kotlinx.io.Source
-import kotlin.experimental.and
 
 fun Source.read7BitInt(): Int {
-    var num = 0
-    var hasMore = true
+    var shift = 0
+    var num = 0U
 
-    while(hasMore) {
-        val part = readByte()
-        num = num shl 7
-        num = num or (part and 127).toInt()
-        hasMore = (part and 128.toByte()) > 0
+    while (true) {
+        val part = readByte().toUInt() and 255U
+        num = num or ((part and 127U) shl shift)
+        if ((part and 128U) == 0U) break
+        shift += 7
     }
 
-    return num
+    return num.toInt()
 }
 
 fun Sink.write7BitInt(value: Int) {

@@ -14,7 +14,7 @@
     </appender>
 
     <logger name="ch.qos.logback" level="WARN" />
-    <logger name="uk.reddust.hostess" level="DEBUG" />
+    <logger name="uk.reddust.hostess" level="INFO" />
 
     <root level="info">
         <appender-ref ref="FILE" />

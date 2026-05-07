@@ -11,7 +11,7 @@ class FileResponseFailurePacket : Packet {
     override fun encode(buffer: Sink): PacketType {
         buffer.write7BitInt(clientHandle)
         buffer.write7BitInt(errorKind.ordinal)
-        return PacketType.FileRequestBlocking
+        return PacketType.FileResponseFailure
     }
 
     override fun decode(header: PacketHeader, buffer: Source) {
