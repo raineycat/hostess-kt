@@ -10,15 +10,18 @@ import kotlinx.io.Buffer
 import kotlinx.io.EOFException
 import uk.reddust.hostess.packets.*
 import java.nio.file.Path
+import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.fileSize
 import kotlin.io.path.listDirectoryEntries
 
 class ClientConn(val socket: Socket) {
-    var name = "client"
+    val uuid: UUID = UUID.randomUUID()
+    var name = uuid.toString()
     val logger = KotlinLogging.logger {  }
     val writer = socket.openWriteChannel(true)
+    var logHistory = listOf<String>()
 
     suspend fun handle() {
         val channel = socket.openReadChannel()
@@ -45,6 +48,13 @@ class ClientConn(val socket: Socket) {
         logger.debug { "[$name] DC" }
     }
 
+    suspend fun sendLua(code: String) {
+        logger.info { "[$name] exec: $code" }
+        reply(::LuaCommandPacket) {
+            this.text = code
+        }
+    }
+
     private suspend fun <TPacket: Packet> reply(ctor: () -> TPacket, builder: TPacket.() -> Unit) {
         val packet = ctor()
         packet.builder()
@@ -58,7 +68,10 @@ class ClientConn(val socket: Socket) {
 
     private suspend fun process(packet: Packet) {
         when (packet) {
-            is DebugLogPacket -> logger.info { "[$name] [GameLog] ${packet.text}" }
+            is DebugLogPacket -> {
+                logger.info { "[$name] [GameLog] ${packet.text}" }
+                logHistory += packet.text
+            }
 
             is SetClientNamePacket ->  {
                 logger.info { "[$name] rename to '${packet.text}'" }

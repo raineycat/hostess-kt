@@ -11,19 +11,28 @@ suspend fun main() {
 
     val listener = BroadcastListener.create("0.0.0.0")
     val server = HostessServer.create("0.0.0.0")
+    val web = WebInterface(8080)
 
     withContext(Dispatchers.Default) {
-        this.launch {
+        launch {
             while(true) {
                 listener.receive()
             }
         }
 
-        this.launch {
+        launch {
             while(true) {
                 val client = server.accept()
-                this.launch { client.handle() }
+                web.registerClient(client)
+                launch {
+                    client.handle()
+                    web.unregisterClient(client)
+                }
             }
+        }
+
+        launch {
+            web.start()
         }
 
         logger.debug { "started listening" }

@@ -4,10 +4,14 @@ logging = "7.0.3"
 logback = "1.5.32"
 
 [bundles]
-ktor = ["ktor-sockets"]
+ktor = ["ktor-sockets", "ktor-sse", "ktor-netty", "ktor-status-pages"]
 logging = ["kotlin-logging", "logback-classic"]
 
 [libraries]
-ktor-sockets = { group = "io.ktor", name = "ktor-network", version.ref="ktor" }
+ktor-sockets = { group = "io.ktor", name = "ktor-network", version.ref = "ktor" }
+ktor-sse = { group = "io.ktor", name = "ktor-server-sse", version.ref = "ktor" }
+ktor-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
+ktor-status-pages = { group = "io.ktor", name = "ktor-server-status-pages", version.ref = "ktor" }
+
 kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "logging" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }

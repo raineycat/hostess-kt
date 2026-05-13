@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.3.10"
+    application
 }
 
 group = "uk.reddust.hostess"
@@ -17,4 +18,8 @@ dependencies {
 
 kotlin {
     jvmToolchain(25)
+}
+
+application {
+    mainClass = "uk.reddust.hostess.MainKt"
 }
