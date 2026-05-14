@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="/pico">
+    <title>'$client.name' - Hostess</title>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Client: $client.name</h1>
+      <h3>ID: <code>$client.uuid</code></h3>
+      <h3><a href="/clients/$client.uuid/log">Logs</a></h3>
+
+      <h3>Lua console</h3>
+      <form method="post" action="/clients/$client.uuid/lua">
+        <textarea name="code" placeholder="Enter code here..."></textarea>
+        <input type="submit">
+      </form>
+    </main>
+  </body>
+</html>

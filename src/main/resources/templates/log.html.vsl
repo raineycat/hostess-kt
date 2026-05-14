@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="/pico">
+    <title>Logs from '$client.name' - Hostess</title>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Logs from <i>'$client.name'</i></h1>
+      #set($messages = $client.logHistory)
+      <pre>
+        #foreach($msg in $messages)
+        $msg
+        #end
+      </pre>
+    </main>
+  </body>
+</html>

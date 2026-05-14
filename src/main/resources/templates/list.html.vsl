@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="/pico">
+    <title>Hostess Client List</title>
+  </head>
+  <body>
+    <main class="container">
+      <ul>
+        #foreach($c in $clients)
+        <li>
+          <a href="/clients/$c.uuid">$c.name</a> (<a href="/clients/$c.uuid/log">log</a>)
+        </li>
+        #end
+      </ul>
+    </main>
+  </body>
+</html>
