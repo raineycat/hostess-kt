@@ -15,6 +15,8 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.fileSize
 import kotlin.io.path.listDirectoryEntries
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class ClientConn(val socket: Socket) {
     val uuid: UUID = UUID.randomUUID()
@@ -22,6 +24,7 @@ class ClientConn(val socket: Socket) {
     val logger = KotlinLogging.logger {  }
     val writer = socket.openWriteChannel(true)
     var logHistory = listOf<String>()
+    var lastKeepAliveTime: Instant? = null
 
     suspend fun handle() {
         val channel = socket.openReadChannel()
@@ -68,6 +71,11 @@ class ClientConn(val socket: Socket) {
 
     private suspend fun process(packet: Packet) {
         when (packet) {
+            is KeepAlivePacket -> {
+                logger.debug { "[$name] keep alive" }
+                lastKeepAliveTime = Clock.System.now()
+            }
+
             is DebugLogPacket -> {
                 logger.info { "[$name] [GameLog] ${packet.text}" }
                 logHistory += packet.text

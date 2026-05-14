@@ -50,6 +50,10 @@ class WebInterface(val port: Int) {
                 get("/pico") {
                     call.respondResource("vendor/pico.amber.min.css")
                 }
+
+                get("/contentScript") {
+                    call.respondResource("content.js")
+                }
             }
         }.start(wait = true)
     }

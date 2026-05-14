@@ -9,11 +9,14 @@
   </head>
   <body>
     <main class="container">
+      <h1>Connected clients:</h1>
       <ul>
         #foreach($c in $clients)
         <li>
           <a href="/clients/$c.uuid">$c.name</a> (<a href="/clients/$c.uuid/log">log</a>)
         </li>
+        #else
+        <h3>There are no clients!</h3>
         #end
       </ul>
     </main>
