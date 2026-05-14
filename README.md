@@ -9,15 +9,19 @@ This server implements broadcast listening, so a patched game can automatically 
 This project is written in Kotlin and uses `ktor-sockets` for networking.
 Logback handles logging, so you can edit that config file if you want more or less verbosity.
 
-## Project state
-- The low level protocol stuff works
-- It can receive and print debug logs
-- Sending files is currently broken for unknown reasons
-- Not all packets are implemented
+## Usage
+When you run the server, it starts a web interface in port 8080, as well as listening on the required ports for Hostess.
+You need to first patch the game to connect to the server, or else nothing will happen.
+I'm working on an automatic patcher to do this, but for now you need to do it manually.
 
-### Goals
-- Configuration system
-- Some kind of control interface
+Using a tool like dnSpy/ILSpy, add the following line into the `App` class constructor.
+Null and zero will make it use UDP discovery, which is nice and easy.
+```csharp
+HostessClient.init(null, 0);
+```
+
+When the game boots, it should show up in the client list (http://localhost:8080/clients).
+From there, you can click on the link and interact with it.
 
 ## Protocol features
 - Asset file loading
@@ -25,11 +29,12 @@ Logback handles logging, so you can edit that config file if you want more or le
   - This overrides using local files on disk
 - Debug logs
   - The game will sometimes send debug log messages over the network
-  - Not all messages are sent though
-  - Code patches could make the logs more verbose
-- Lua execution
-  - The server can send Lua code to the game to be executed
-  - I haven't played around with this yet, I don't know how powerful it is
+  - Not all messages are sent by default
+  - Code patches are required for more logging
+- Lua
+  - The server can send Lua code to be executed in the context of the game
 - Cheat keys
   - Sends keycodes to the game
   - The game simulates them being pressed
+  - This can be used to trigger the built in debug actions if enabled
+  - I will compile a list at some point™
