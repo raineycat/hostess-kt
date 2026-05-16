@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="/pico">
+    <title>Hostess</title>
+</head>
+<body>
+<main class="container">
+    <h1>Hostess Server</h1>
+    <h3><a href="https://github.com/raineycat/hostess-kt">github.com/raineycat/hostess-kt</a></h3>
+    <hr>
+
+    <h3>Status:</h3>
+    <ul>
+        <li>Connected clients: $clientCount</li>
+    </ul>
+
+    <h3>Pages:</h3>
+    <ul>
+        <li><a href="/clients">Clients</a></li>
+    </ul>
+</main>
+</body>
+</html>

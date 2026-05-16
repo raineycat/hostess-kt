@@ -43,6 +43,10 @@ class WebInterface(val port: Int) {
             }
 
             routing {
+                get {
+                    call.respondTemplate("templates/index.html.vsl", mutableMapOf("clientCount" to clients.size))
+                }
+
                 route("/clients") {
                     clientRoutes()
                 }

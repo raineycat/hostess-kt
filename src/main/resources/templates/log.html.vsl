@@ -9,7 +9,7 @@
   </head>
   <body>
     <main class="container">
-      <h1>Logs from '$client.name'</h1>
+      <h1>Logs from '$client.name' (<a href="/clients/$client.uuid">back</a>)</h1>
       #set($messages = $client.logHistory)
       <pre>
         #foreach($msg in $messages)
