@@ -11,7 +11,7 @@ interface Packet {
     companion object {
         fun read(buffer: Source): Packet {
             val header = PacketHeader.decode(buffer)
-            val inst = header.type.clazz.constructors.first().call()
+            val inst = header.type.ctor()
             inst.decode(header, buffer)
             return inst
         }

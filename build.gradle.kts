@@ -13,7 +13,6 @@ repositories {
 dependencies {
     implementation(libs.bundles.ktor)
     implementation(libs.bundles.logging)
-    implementation(kotlin("reflect"))
 }
 
 kotlin {

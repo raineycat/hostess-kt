@@ -43,9 +43,8 @@ class ClientConn(val socket: Socket) {
             logger.debug { "[$name] got packet $header" }
             val remaining = channel.readPacket(header.bodySize.toInt())
 
-            val packet = header.type.clazz.constructors.first().call()
+            val packet = header.type.ctor()
             packet.decode(header, remaining)
-
             process(packet)
         }
         logger.debug { "[$name] DC" }

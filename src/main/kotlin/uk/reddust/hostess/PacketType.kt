@@ -1,31 +1,30 @@
 package uk.reddust.hostess
 
-import kotlin.reflect.KClass
 import uk.reddust.hostess.packets.*
 
-enum class PacketType(val value: Byte, val clazz: KClass<out Packet>) {
-    None(0, EmptyPacket::class),
-    FileRequestBlocking(1, FileRequestBlockingPacket::class),
-    FileResponseData(2, FileResponseDataPacket::class),
-    FileResponseFailure(3, FileResponseFailurePacket::class),
-    FileResponseBegin(4, FileResponseBeginPacket::class),
-    FileResponseEnd(5, FileResponseEndPacket::class),
-    ClientAnnounce(6, ClientAnnouncePacket::class),
-    ServerAccept(7, ServerAcceptPacket::class),
-    CheatKey(8, EmptyPacket::class),
-    DirectoryGetFiles(9, DirectoryGetFilesPacket::class),
-    DirectoryGetFilesResponse(10, DirectoryGetFilesResponsePacket::class),
-    ServerAnnounce(11, EmptyPacket::class),
-    ClientConnectionAnnounce(12, EmptyPacket::class),
-    FileExistsRequest(13, FileExistsRequestPacket::class),
-    FileExistsResponse(14, EmptyPacket::class),
-    FileRequestCachedBlocking(15, EmptyPacket::class),
-    FileResponseCachedBegin(16, EmptyPacket::class),
-    KeepAlive(17, KeepAlivePacket::class),
-    SetClientName(18, SetClientNamePacket::class),
-    ServerReject(19, EmptyPacket::class),
-    LuaCommand(20, LuaCommandPacket::class),
-    DebugLog(127, DebugLogPacket::class);
+enum class PacketType(val value: Byte, val ctor: () -> Packet) {
+    None(0, ::EmptyPacket),
+    FileRequestBlocking(1, ::FileRequestBlockingPacket),
+    FileResponseData(2, ::FileResponseDataPacket),
+    FileResponseFailure(3, ::FileResponseFailurePacket),
+    FileResponseBegin(4, ::FileResponseBeginPacket),
+    FileResponseEnd(5, ::FileResponseEndPacket),
+    ClientAnnounce(6, ::ClientAnnouncePacket),
+    ServerAccept(7, ::ServerAcceptPacket),
+    CheatKey(8, ::EmptyPacket),
+    DirectoryGetFiles(9, ::DirectoryGetFilesPacket),
+    DirectoryGetFilesResponse(10, ::DirectoryGetFilesResponsePacket),
+    ServerAnnounce(11, ::EmptyPacket),
+    ClientConnectionAnnounce(12, ::EmptyPacket),
+    FileExistsRequest(13, ::FileExistsRequestPacket),
+    FileExistsResponse(14, ::EmptyPacket),
+    FileRequestCachedBlocking(15, ::EmptyPacket),
+    FileResponseCachedBegin(16, ::EmptyPacket),
+    KeepAlive(17, ::KeepAlivePacket),
+    SetClientName(18, ::SetClientNamePacket),
+    ServerReject(19, ::EmptyPacket),
+    LuaCommand(20, ::LuaCommandPacket),
+    DebugLog(127, ::DebugLogPacket);
 
     companion object {
         fun get(value: Byte): PacketType {
