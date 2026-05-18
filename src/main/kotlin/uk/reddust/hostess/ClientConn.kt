@@ -57,6 +57,13 @@ class ClientConn(val socket: Socket) {
         }
     }
 
+    suspend fun sendKey(key: KeyCombo) {
+        logger.info { "[$name] key: $key" }
+        reply(::CheatKeyPacket) {
+            this.key = key
+        }
+    }
+
     private suspend fun <TPacket: Packet> reply(ctor: () -> TPacket, builder: TPacket.() -> Unit) {
         val packet = ctor()
         packet.builder()
